@@ -1,0 +1,474 @@
+/* ===== MAIN SECTION ===== */
+.section {
+  @apply py-16 md:py-20 lg:py-24 relative overflow-hidden;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 20%, #f1f5f9 40%, #ffffff 100%);
+}
+
+.container {
+  @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10;
+}
+
+/* ===== BACKGROUND ELEMENTS ===== */
+.backgroundElements {
+  @apply absolute inset-0 overflow-hidden pointer-events-none;
+}
+
+.gradientOrb1 {
+  @apply absolute w-96 h-96 rounded-full opacity-30;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.3) 0%, transparent 70%);
+  top: -10%;
+  left: -10%;
+  animation: float 20s ease-in-out infinite;
+}
+
+.gradientOrb2 {
+  @apply absolute w-80 h-80 rounded-full opacity-20;
+  background: radial-gradient(circle, rgba(139, 92, 246, 0.3) 0%, transparent 70%);
+  bottom: -10%;
+  right: -10%;
+  animation: float 25s ease-in-out infinite reverse;
+}
+
+.gridPattern {
+  @apply absolute inset-0 opacity-5;
+  background-image: 
+    linear-gradient(rgba(59, 130, 246, 0.3) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.3) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* ===== HEADER ===== */
+.header {
+  @apply text-center mb-12 md:mb-16;
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.badge {
+  @apply inline-flex items-center gap-2 px-4 py-2 rounded-full mb-6;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  backdrop-filter: blur(10px);
+}
+
+.badgeIcon {
+  @apply h-4 w-4 text-blue-600;
+}
+
+.badgeText {
+  @apply text-sm font-semibold;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.title {
+  @apply text-3xl md:text-4xl lg:text-5xl font-bold mb-4;
+  line-height: 1.1;
+}
+
+.gradientText {
+  background: linear-gradient(135deg, #1e293b 0%, #3b82f6 40%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.description {
+  @apply text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed;
+}
+
+/* ===== QUICK STATS ===== */
+.quickStats {
+  @apply grid grid-cols-2 md:grid-cols-4 gap-6 mb-16;
+}
+
+.statItem {
+  @apply text-center p-4 rounded-xl;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  animation: slideInUp 0.6s ease-out both;
+  transition: all 0.3s ease;
+}
+
+.statItem:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.statNumber {
+  @apply block text-2xl md:text-3xl font-bold mb-1;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.statLabel {
+  @apply text-sm text-slate-600 font-medium;
+}
+
+/* ===== MAIN CONTENT ===== */
+.mainContent {
+  @apply grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 mb-16;
+}
+
+/* ===== CONTACT INFO ===== */
+.contactInfo {
+  @apply space-y-8;
+}
+
+.infoHeader {
+  @apply space-y-2;
+}
+
+.infoTitle {
+  @apply text-2xl font-bold text-slate-800;
+}
+
+.infoSubtitle {
+  @apply text-slate-600;
+}
+
+.contactList {
+  @apply space-y-4;
+}
+
+.contactItem {
+  @apply flex items-center gap-4 p-4 rounded-xl transition-all duration-300;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+  animation: slideInLeft 0.6s ease-out both;
+}
+
+.contactItem:hover {
+  transform: translateX(4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.contactIcon {
+  @apply w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+}
+
+.contactIconSvg {
+  @apply h-5 w-5 text-white;
+}
+
+.contactDetails {
+  @apply flex-1 min-w-0;
+}
+
+.contactLabel {
+  @apply block text-sm font-medium text-slate-500 mb-1;
+}
+
+.contactValue {
+  @apply flex items-center gap-2;
+}
+
+.contactLink {
+  @apply text-slate-800 font-semibold hover:text-blue-600 transition-colors duration-200 flex items-center gap-1;
+}
+
+.externalIcon {
+  @apply h-3 w-3;
+}
+
+.copyButton {
+  @apply w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-200;
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.copyButton:hover {
+  background: rgba(59, 130, 246, 0.2);
+  transform: scale(1.1);
+}
+
+.copyIcon {
+  @apply h-4 w-4 text-blue-600;
+}
+
+/* ===== ADDITIONAL INFO ===== */
+.additionalInfo {
+  @apply space-y-3 pt-6 border-t border-slate-200;
+}
+
+.infoItem {
+  @apply flex items-center gap-3 text-slate-600;
+}
+
+.infoItemIcon {
+  @apply h-4 w-4 text-slate-400;
+}
+
+/* ===== CONTACT FORM ===== */
+.contactForm {
+  @apply space-y-6;
+}
+
+.formHeader {
+  @apply space-y-2;
+}
+
+.formTitle {
+  @apply text-2xl font-bold text-slate-800;
+}
+
+.formSubtitle {
+  @apply text-slate-600;
+}
+
+.form {
+  @apply space-y-6 p-6 rounded-2xl;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.formGrid {
+  @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.formGroup {
+  @apply space-y-2;
+}
+
+.formLabel {
+  @apply block text-sm font-medium text-slate-700;
+}
+
+.formInput {
+  @apply w-full px-4 py-3 rounded-lg border border-slate-200 bg-white/80 backdrop-blur-sm;
+  @apply focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  @apply transition-all duration-200;
+}
+
+.formInput:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.formTextarea {
+  @apply w-full px-4 py-3 rounded-lg border border-slate-200 bg-white/80 backdrop-blur-sm resize-none;
+  @apply focus:ring-2 focus:ring-blue-500 focus:border-transparent;
+  @apply transition-all duration-200;
+}
+
+.formTextarea:focus {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.submitButton {
+  @apply w-full md:w-auto px-8 py-3 rounded-lg font-semibold text-white transition-all duration-300;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.submitButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+}
+
+.submitButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.submitIcon {
+  @apply h-4 w-4 mr-2;
+}
+
+.spinner {
+  @apply w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2;
+}
+
+/* ===== CALL TO ACTION ===== */
+.callToAction {
+  @apply text-center mb-12 p-8 md:p-12 rounded-2xl;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(139, 92, 246, 0.05) 100%);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+}
+
+.ctaContent {
+  @apply space-y-6;
+}
+
+.ctaTitle {
+  @apply text-2xl md:text-3xl font-bold text-slate-800;
+}
+
+.ctaDescription {
+  @apply text-lg text-slate-600 max-w-md mx-auto;
+}
+
+.ctaButtons {
+  @apply flex flex-col sm:flex-row items-center justify-center gap-4;
+}
+
+.ctaPrimary {
+  @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-white transition-all duration-300;
+  background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+}
+
+.ctaPrimary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+}
+
+.ctaSecondary {
+  @apply inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold text-slate-700 transition-all duration-300;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(20px);
+}
+
+.ctaSecondary:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.ctaIcon {
+  @apply h-4 w-4;
+}
+
+/* ===== FOOTER NOTE ===== */
+.footerNote {
+  @apply text-center p-4 rounded-lg;
+  background: rgba(34, 197, 94, 0.05);
+  border: 1px solid rgba(34, 197, 94, 0.1);
+}
+
+.noteText {
+  @apply text-sm text-slate-600;
+}
+
+/* ===== ANIMATIONS ===== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+/* ===== MOBILE OPTIMIZATIONS ===== */
+@media (max-width: 768px) {
+  .section {
+    padding: 3rem 0;
+  }
+  
+  .title {
+    font-size: 2rem;
+  }
+  
+  .quickStats {
+    grid-template-columns: 2fr 2fr;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+  
+  .statItem {
+    padding: 1rem;
+  }
+  
+  .statNumber {
+    font-size: 1.5rem;
+  }
+  
+  .mainContent {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    margin-bottom: 3rem;
+  }
+  
+  .contactItem {
+    padding: 1rem;
+  }
+  
+  .form {
+    padding: 1.5rem;
+  }
+  
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+  
+  .ctaButtons {
+    flex-direction: column;
+  }
+  
+  .ctaPrimary,
+  .ctaSecondary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
+@media (prefers-reduced-motion: reduce) {
+  .statItem,
+  .contactItem,
+  .submitButton,
+  .ctaPrimary,
+  .ctaSecondary {
+    transition: none;
+    animation: none;
+  }
+  
+  .gradientOrb1,
+  .gradientOrb2 {
+    animation: none;
+  }
+}
+
+/* ===== FOCUS STATES ===== */
+.copyButton:focus,
+.submitButton:focus,
+.ctaPrimary:focus,
+.ctaSecondary:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}

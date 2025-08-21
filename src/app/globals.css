@@ -1,26 +1,482 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Blockchain Colors */
+  --bitcoin-orange: #f7931a;
+  --bitcoin-gold: #ffb000;
+  --ethereum-blue: #627eea;
+  --crypto-green: #00d4aa;
+  --defi-purple: #8b5cf6;
+  --nft-pink: #ec4899;
+  
+  /* Dark Theme */
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #141420;
+  --bg-tertiary: #1e1e2e;
+  --bg-card: #252537;
+  
+  --text-primary: #ffffff;
+  --text-secondary: #b4b4c8;
+  --text-muted: #7c7c94;
+  
+  /* Neon Effects */
+  --neon-blue: #00d4ff;
+  --neon-purple: #a855f7;
+  --neon-green: #10b981;
+  
+  /* Gradients */
+  --gradient-crypto: linear-gradient(135deg, #f7931a 0%, #ffb000 25%, #00d4aa 50%, #627eea 75%, #8b5cf6 100%);
+  --gradient-dark: linear-gradient(135deg, #0a0a0f 0%, #141420 50%, #1e1e2e 100%);
+  --gradient-card: linear-gradient(135deg, rgba(37, 37, 55, 0.8) 0%, rgba(30, 30, 46, 0.6) 100%);
+  
+  /* Fonts */
+  --font-primary: 'Inter', system-ui, sans-serif;
+  --font-tech: 'JetBrains Mono', monospace;
+  --font-display: 'Orbitron', monospace;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-primary);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Blockchain Background Pattern */
+body:before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(247, 147, 26, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(98, 126, 234, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 40% 60%, rgba(139, 92, 246, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--bitcoin-orange), var(--crypto-green));
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, var(--bitcoin-gold), var(--neon-green));
+}
+
+/* Blockchain Utilities */
+@layer utilities {
+  .text-crypto-gradient {
+    background: var(--gradient-crypto);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-size: 200% 200%;
+    animation: crypto-gradient-shift 3s ease-in-out infinite;
+  }
+  
+  .text-bitcoin {
+    color: var(--bitcoin-orange);
+    text-shadow: 0 0 10px rgba(247, 147, 26, 0.3);
+  }
+  
+  .text-ethereum {
+    color: var(--ethereum-blue);
+    text-shadow: 0 0 10px rgba(98, 126, 234, 0.3);
+  }
+  
+  .text-neon-glow {
+    text-shadow: 
+      0 0 5px currentColor,
+      0 0 10px currentColor,
+      0 0 15px currentColor;
+  }
+  
+  .bg-crypto-glass {
+    background: rgba(37, 37, 55, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(247, 147, 26, 0.2);
+  }
+  
+  .bg-blockchain-card {
+    background: var(--gradient-card);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+  }
+  
+  .bg-blockchain-card:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--gradient-crypto);
+    opacity: 0.5;
+  }
+  
+  .border-crypto-glow {
+    border: 1px solid transparent;
+    background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+                var(--gradient-crypto) border-box;
+  }
+  
+  .shadow-crypto {
+    box-shadow: 
+      0 0 20px rgba(247, 147, 26, 0.1),
+      0 0 40px rgba(98, 126, 234, 0.1),
+      0 0 60px rgba(139, 92, 246, 0.1);
+  }
+  
+  .shadow-neon-blue {
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.3);
+  }
+  
+  .shadow-neon-purple {
+    box-shadow: 0 0 30px rgba(168, 85, 247, 0.3);
+  }
+  
+  .container-fluid {
+    width: 100%;
+    padding: 0 1rem;
+    margin: 0 auto;
+  }
+  
+  @media (min-width: 640px) {
+    .container-fluid { padding: 0 1.5rem; }
+  }
+  
+  @media (min-width: 1024px) {
+    .container-fluid { 
+      max-width: 1200px; 
+      padding: 0 2rem; 
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .container-fluid { max-width: 1400px; }
+  }
+}
+
+/* Advanced Components */
+@layer components {
+  .crypto-button-primary {
+    background: var(--gradient-crypto);
+    color: var(--bg-primary);
+    border: none;
+    border-radius: 12px;
+    padding: 16px 32px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  
+  .crypto-button-primary:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s;
+  }
+  
+  .crypto-button-primary:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+      0 10px 30px rgba(247, 147, 26, 0.3),
+      0 0 50px rgba(247, 147, 26, 0.2);
+  }
+  
+  .crypto-button-primary:hover:before {
+    left: 100%;
+  }
+  
+  .crypto-button-secondary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--bitcoin-orange);
+    border-radius: 12px;
+    padding: 14px 30px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  
+  .crypto-button-secondary:hover {
+    background: var(--bitcoin-orange);
+    color: var(--bg-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(247, 147, 26, 0.4);
+  }
+  
+  .blockchain-card {
+    background: var(--bg-blockchain-card);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    transition: all 0.4s ease;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  .blockchain-card:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--gradient-crypto);
+    opacity: 0.6;
+  }
+  
+  .blockchain-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: rgba(247, 147, 26, 0.3);
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.3),
+      0 0 40px rgba(247, 147, 26, 0.1);
+  }
+  
+  .hero-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+  
+  .hero-subtitle {
+    font-family: var(--font-tech);
+    font-size: clamp(1rem, 3vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+  }
+  
+  .tech-grid-pattern {
+    background-image: 
+      linear-gradient(rgba(247, 147, 26, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(247, 147, 26, 0.1) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+  
+  .matrix-rain-effect {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  
+  .avatar-crypto {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: var(--gradient-card);
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: all 0.5s ease;
+  }
+  
+  .avatar-crypto:before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: var(--gradient-crypto);
+    z-index: -1;
+    animation: crypto-border-spin 3s linear infinite;
+  }
+  
+  .avatar-crypto:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 
+      0 0 50px rgba(247, 147, 26, 0.3),
+      0 0 100px rgba(98, 126, 234, 0.2);
+  }
+  
+  @media (min-width: 768px) {
+    .avatar-crypto {
+      width: 280px;
+      height: 280px;
+    }
+  }
+}
+
+/* Advanced Animations */
+@keyframes crypto-gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+@keyframes crypto-border-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes float-crypto {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  25% { transform: translateY(-10px) rotate(2deg); }
+  50% { transform: translateY(-20px) rotate(0deg); }
+  75% { transform: translateY(-10px) rotate(-2deg); }
+}
+
+@keyframes pulse-neon {
+  0%, 100% { 
+    box-shadow: 0 0 20px currentColor;
+    opacity: 1;
+  }
+  50% { 
+    box-shadow: 0 0 40px currentColor, 0 0 60px currentColor;
+    opacity: 0.8;
+  }
+}
+
+@keyframes slide-up-crypto {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes typing-cursor {
+  0%, 50% { border-color: var(--bitcoin-orange); }
+  51%, 100% { border-color: transparent; }
+}
+
+/* Utility Animations */
+.animate-float-crypto {
+  animation: float-crypto 4s ease-in-out infinite;
+}
+
+.animate-pulse-neon {
+  animation: pulse-neon 2s ease-in-out infinite;
+}
+
+.animate-slide-up-crypto {
+  animation: slide-up-crypto 0.8s ease-out forwards;
+}
+
+.animate-typing-cursor {
+  animation: typing-cursor 1s infinite;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 768px) {
+  .blockchain-card {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+  
+  .crypto-button-primary,
+  .crypto-button-secondary {
+    width: 100%;
+    padding: 16px 24px;
+    font-size: 0.9rem;
+  }
+  
+  .hero-title {
+    text-align: center;
+  }
+  
+  .hero-subtitle {
+    text-align: center;
+  }
+  
+  .mobile-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .mobile-center {
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+/* Performance Optimizations */
+.gpu-layer {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Focus States */
+*:focus {
+  outline: 2px solid var(--bitcoin-orange);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Print Styles */
+@media print {
+  .no-print { display: none !important; }
+  body { 
+    background: white !important; 
+    color: black !important; 
+  }
 }
