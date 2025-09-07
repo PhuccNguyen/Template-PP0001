@@ -2,20 +2,37 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { events } from '@/data/events';
-import { Calendar, MapPin, Users, Mic, Building, Award, ExternalLink, X, ChevronDown, ChevronUp, Play, Image as ImageIcon, Link as LinkIcon, Newspaper, BarChart3, Eye } from 'lucide-react';
+import { 
+  activityEvents, 
+  eventImages, 
+  eventMediaLinks, 
+  type ActivityEvent 
+} from '@/data/activityData';
+import { 
+  Calendar, 
+  MapPin, 
+  Users, 
+  Mic, 
+  Building, 
+  Award, 
+  ExternalLink, 
+  X, 
+  ChevronDown, 
+  ChevronUp, 
+  ChevronLeft,
+  ChevronRight,
+  Play, 
+  Image as ImageIcon, 
+  Newspaper, 
+  Eye,
+  FileText 
+} from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import styles from './activity-showcase.module.css';
 
-// Type definitions
-interface Event {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  location: string;
-  category: 'talkshow' | 'workshop' | 'conference' | 'mou';
-}
+// Constants
+const ITEMS_PER_LOAD = 3;
+const INITIAL_VISIBLE_COUNT = 3;
 
 const categoryIcons = {
   talkshow: Mic,
@@ -26,81 +43,688 @@ const categoryIcons = {
 
 const categoryLabels = {
   talkshow: 'Talkshow',
-  workshop: 'Workshop',
+  workshop: 'Workshop', 
   conference: 'Hội thảo',
   mou: 'Ký kết MOU',
 };
 
-// Mock image data
-const eventImages: { [key: string]: string[] } = {
-  "1": [
-    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=800&h=600&fit=crop',
-  ],
-  "2": [
-    'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&h=600&fit=crop',
-  ],
-  "3": [
-    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&h=600&fit=crop',
-  ],
-  "4": [
-    'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=800&h=600&fit=crop',
-    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop',
-  ],
-};
-
-// Mock media links
-const eventMediaLinks: { [key: string]: { title: string; description: string; url: string }[] } = {
-  "1": [
-    { title: "Báo Thanh Niên", description: "Lương kỹ sư AI có thể lên tới tỷ đồng mỗi năm tại Việt Nam", url: "#" },
-    { title: "VnExpress", description: "Sinh viên Huế háo hức tìm hiểu về công nghệ Blockchain", url: "#" },
-    { title: "Tuổi Trẻ", description: "Hướng nghiệp AI - Blockchain cho thế hệ Z", url: "#" },
-  ],
-  "2": [
-    { title: "Báo Giáo dục", description: "Workshop Blockchain thu hút đông đảo sinh viên", url: "#" },
-    { title: "ICTNews", description: "Xu hướng ứng dụng Blockchain trong giáo dục", url: "#" },
-  ],
-  "3": [
-    { title: "VietnamNet", description: "Hội thảo AI: Cơ hội và thách thức", url: "#" },
-    { title: "Dân Trí", description: "Chuyên gia chia sẻ về tương lai AI", url: "#" },
-    { title: "24h", description: "Sự kiện công nghệ quy mô lớn tại Huế", url: "#" },
-  ],
-  "4": [
-    { title: "Báo Đầu tư", description: "Ký kết hợp tác phát triển công nghệ", url: "#" },
-    { title: "Báo Khoa học", description: "Thúc đẩy nghiên cứu AI trong giáo dục", url: "#" },
-  ],
-};
-
 export default function ActivityShowcase() {
-  const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
-  const [showMore, setShowMore] = useState<boolean>(false);
+  // State management
+  const [selectedEvent, setSelectedEvent] = useState<ActivityEvent | null>(null);
+  const [visibleCount, setVisibleCount] = useState<number>(INITIAL_VISIBLE_COUNT);
+  const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
 
-  const INITIAL_DISPLAY_COUNT = 3; // Giảm từ 4 xuống 3 để mobile không quá dài
-  const displayedEvents = showMore ? events : events.slice(0, INITIAL_DISPLAY_COUNT);
+  // Computed values
+  const displayedEvents = activityEvents.slice(0, visibleCount);
+  const hasMore = visibleCount < activityEvents.length;
 
-  const openEventDetail = (event: Event): void => {
+  // Event handlers
+  const openEventDetail = (event: ActivityEvent): void => {
     setSelectedEvent(event);
+    setSelectedImageIndex(0);
   };
 
   const closeEventDetail = (): void => {
     setSelectedEvent(null);
+    setSelectedImageIndex(0);
   };
 
-  const toggleShowMore = (): void => {
-    setShowMore(!showMore);
+  const loadMore = (): void => {
+    setVisibleCount(prev => Math.min(prev + ITEMS_PER_LOAD, activityEvents.length));
   };
 
+  const showLess = (): void => {
+    setVisibleCount(INITIAL_VISIBLE_COUNT);
+  };
+
+  const selectImage = (index: number): void => {
+    setSelectedImageIndex(index);
+  };
+
+  const navigateImage = (direction: 'prev' | 'next'): void => {
+    if (!selectedEvent || !eventImages[selectedEvent.id]) return;
+    
+    const imagesLength = eventImages[selectedEvent.id].length;
+    if (direction === 'prev') {
+      setSelectedImageIndex(prev => prev > 0 ? prev - 1 : imagesLength - 1);
+    } else {
+      setSelectedImageIndex(prev => prev < imagesLength - 1 ? prev + 1 : 0);
+    }
+  };
+
+  // Render helpers
+  const renderEventCard = (event: ActivityEvent, index: number) => {
+    const Icon = categoryIcons[event.category];
+    const isEven = index % 2 === 0;
+    const currentImages = eventImages[event.id] || [];
+    
+    return (
+      <div 
+        key={event.id} 
+        className={`${styles.eventRow} ${isEven ? styles.eventRowNormal : styles.eventRowReverse}`}
+        style={{ animationDelay: `${index * 0.1}s` }}
+      >
+        {/* Image Section */}
+        <div 
+          className={styles.imageSection}
+          onClick={() => openEventDetail(event)}
+        >
+          <div className={styles.imageContainer}>
+            {currentImages.length > 0 ? (
+              <>
+                <Image
+                  src={currentImages[0]} 
+                  alt={event.title}
+                  fill
+                  className={styles.eventImage}
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority={index < 2}
+                />
+                <div className={styles.imageOverlay}>
+                  <div className={styles.overlayContent}>
+                    <Eye className={styles.overlayIcon} />
+                    <span className={styles.overlayText}>Xem chi tiết</span>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <div className={styles.imagePlaceholder}>
+                <div className={`${styles.categoryIcon} ${styles[`icon-${event.category}`]}`}>
+                  <Icon className={styles.icon} />
+                </div>
+              </div>
+            )}
+            
+            {/* Category Badge */}
+            <div className={`${styles.imageCategoryBadge} ${styles[`badge-${event.category}`]}`}>
+              <Icon className={styles.badgeIcon} />
+              <span>{categoryLabels[event.category]}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Content Section */}
+        <div className={styles.contentSection}>
+          <div className={styles.eventContent}>
+            {/* Meta Info */}
+            <div className={styles.eventMeta}>
+              <div className={styles.metaItem}>
+                <Calendar className={styles.metaIcon} />
+                <span className={styles.metaText}>{formatDate(event.date)}</span>
+              </div>
+              <div className={styles.metaItem}>
+                <MapPin className={styles.metaIcon} />
+                <span className={styles.metaText}>{event.location}</span>
+              </div>
+            </div>
+
+            {/* Title */}
+            <h3 
+              className={styles.eventTitle}
+              onClick={() => openEventDetail(event)}
+            >
+              {event.title}
+            </h3>
+
+            {/* Description */}
+            <p className={styles.eventDescription}>
+              {event.description}
+            </p>
+
+            {/* CTA Button */}
+            <button 
+              className={`${styles.ctaButton} ${styles[`cta-${event.category}`]}`}
+              onClick={() => openEventDetail(event)}
+            >
+              <span>Xem chi tiết</span>
+              <ExternalLink className={styles.ctaIcon} />
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderImageGallery = () => {
+    if (!selectedEvent || !eventImages[selectedEvent.id]) return null;
+
+    const images = eventImages[selectedEvent.id];
+    const hasMultipleImages = images.length > 1;
+
+    return (
+      <div className={styles.modalImageSection}>
+        {/* Main Image Display */}
+        <div className={styles.mainImageContainer}>
+          <Image
+            src={images[selectedImageIndex] || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop'} 
+            alt={`${selectedEvent.title} - Ảnh ${selectedImageIndex + 1}`}
+            fill
+            className={styles.modalMainImage}
+            sizes="(max-width: 768px) 100vw, 80vw"
+            priority
+          />
+          
+          {/* Image Counter */}
+          {hasMultipleImages && (
+            <div className={styles.imageCounter}>
+              <span>{selectedImageIndex + 1} / {images.length}</span>
+            </div>
+          )}
+          
+          {/* Navigation Arrows */}
+          {hasMultipleImages && (
+            <>
+              <button 
+                className={`${styles.imageNavButton} ${styles.imageNavPrev}`}
+                onClick={() => navigateImage('prev')}
+                aria-label="Ảnh trước"
+              >
+                <ChevronLeft className={styles.navIcon} />
+              </button>
+              <button 
+                className={`${styles.imageNavButton} ${styles.imageNavNext}`}
+                onClick={() => navigateImage('next')}
+                aria-label="Ảnh tiếp theo"
+              >
+                <ChevronRight className={styles.navIcon} />
+              </button>
+            </>
+          )}
+        </div>
+        
+        {/* Thumbnail Gallery */}
+        {hasMultipleImages && (
+          <div className={styles.thumbnailSection}>
+            <h4 className={styles.thumbnailTitle}>
+              <ImageIcon className={styles.thumbnailTitleIcon} />
+              Thư viện ảnh ({images.length})
+            </h4>
+            <div className={styles.thumbnailGallery}>
+              {images.map((img: string, index: number) => (
+                <div 
+                  key={index} 
+                  className={`${styles.thumbnail} ${index === selectedImageIndex ? styles.thumbnailActive : ''}`}
+                  onClick={() => selectImage(index)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Ảnh ${index + 1}`}
+                >
+                  <Image 
+                    src={img} 
+                    alt={`${selectedEvent.title} thumbnail ${index + 1}`}
+                    fill
+                    className={styles.thumbnailImage}
+                    sizes="(max-width: 768px) 60px, 80px"
+                  />
+                  <div className={styles.thumbnailOverlay}>
+                    <span className={styles.thumbnailIndex}>{index + 1}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderEventInfo = () => {
+    if (!selectedEvent) return null;
+
+    return (
+      <div className={styles.eventInfoBanner}>
+        <div className={styles.eventInfoContent}>
+          <div className={styles.eventInfoMeta}>
+            <div className={styles.eventInfoItem}>
+              <Calendar className={styles.eventInfoIcon} />
+              <span>{formatDate(selectedEvent.date)}</span>
+            </div>
+            <div className={styles.eventInfoDivider}></div>
+            <div className={styles.eventInfoItem}>
+              <MapPin className={styles.eventInfoIcon} />
+              <span>{selectedEvent.location}</span>
+            </div>
+            <div className={styles.eventInfoDivider}></div>
+            <div className={styles.eventInfoItem}>
+              <Users className={styles.eventInfoIcon} />
+              <span>{selectedEvent.school}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderDescription = () => {
+    if (!selectedEvent) return null;
+
+    return (
+      <div className={styles.descriptionSection}>
+        <div className={styles.sectionHeader}>
+          <h3 className={styles.sectionTitle}>
+            <FileText className={styles.sectionTitleIcon} />
+            Chi tiết sự kiện
+          </h3>
+        </div>
+        <div className={styles.descriptionContent}>
+          <p className={styles.modalDescription}>
+            {selectedEvent.description}
+          </p>
+          {selectedEvent.category !== 'mou' && (
+            <p className={styles.modalDescriptionExtended}>
+              Sự kiện đã tạo nên dấu ấn mạnh mẽ trong cộng đồng sinh viên, thu hút sự quan tâm của nhiều bạn trẻ 
+              đam mê công nghệ. Đây là cơ hội quý báu để tiếp cận xu hướng mới và mở rộng mạng lưới kết nối.
+            </p>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderMediaCoverage = () => {
+    if (!selectedEvent) return null;
+
+    const mediaLinks = eventMediaLinks[selectedEvent.id];
+    
+    // Kiểm tra có media links không
+    if (!mediaLinks || mediaLinks.length === 0) {
+      return (
+        <div className={styles.mediaSection}>
+          <div className={styles.sectionHeader}>
+            <h3 className={styles.sectionTitle}>
+              <Newspaper className={styles.sectionTitleIcon} />
+              Đưa tin & Báo chí
+            </h3>
+          </div>
+          <div className={styles.noMediaContent}>
+            <div className={styles.noMediaIcon}>
+              <Newspaper className={styles.noMediaIconSvg} />
+            </div>
+            <p className={styles.noMediaText}>
+              Thông tin báo chí đang được cập nhật...
+            </p>
+          </div>
+        </div>
+      );
+    }
+
+    return (
+      <div className={styles.mediaSection}>
+        <div className={styles.sectionHeader}>
+          <h3 className={styles.sectionTitle}>
+            <Newspaper className={styles.sectionTitleIcon} />
+            Đưa tin & Báo chí
+          </h3>
+          <div className={styles.mediaBadge}>
+            {mediaLinks.length} bài viết
+          </div>
+        </div>
+        <div className={styles.mediaGrid}>
+          {mediaLinks.map((media, index) => (
+            <a 
+              key={index} 
+              href={media.url} 
+              className={styles.mediaCard}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <div className={styles.mediaCardHeader}>
+                <div className={styles.mediaCardIcon}>
+                  <Newspaper className={styles.mediaCardIconSvg} />
+                </div>
+                <ExternalLink className={styles.mediaCardLinkIcon} />
+              </div>
+              <div className={styles.mediaCardContent}>
+                <h4 className={styles.mediaCardTitle}>{media.title}</h4>
+                <p className={styles.mediaCardDescription}>
+                  {media.description.length > 80 
+                    ? `${media.description.substring(0, 80)}...` 
+                    : media.description
+                  }
+                </p>
+              </div>
+              <div className={styles.mediaCardFooter}>
+                <span className={styles.mediaCardAction}>Đọc bài viết</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderActionButtons = () => {
+    if (!selectedEvent) return null;
+
+    const hasMediaLinks = eventMediaLinks[selectedEvent.id] && eventMediaLinks[selectedEvent.id].length > 0;
+
+    return (
+      <div className={styles.modalActions}>
+        <div className={styles.actionButtonsGrid}>
+          <button className={styles.actionButtonPrimary}>
+            <ImageIcon className={styles.actionIcon} />
+            <div className={styles.actionButtonContent}>
+              <span className={styles.actionButtonTitle}>Thư viện ảnh</span>
+              <span className={styles.actionButtonSubtitle}>
+                {eventImages[selectedEvent.id]?.length || 0} hình ảnh
+              </span>
+            </div>
+          </button>
+          
+          <button className={styles.actionButtonSecondary}>
+            <Play className={styles.actionIcon} />
+            <div className={styles.actionButtonContent}>
+              <span className={styles.actionButtonTitle}>Video</span>
+              <span className={styles.actionButtonSubtitle}>Highlights</span>
+            </div>
+          </button>
+          
+          {hasMediaLinks && (
+            <button className={styles.actionButtonSecondary}>
+              <ExternalLink className={styles.actionIcon} />
+              <div className={styles.actionButtonContent}>
+                <span className={styles.actionButtonTitle}>Xem thêm</span>
+                <span className={styles.actionButtonSubtitle}>Bài viết đầy đủ</span>
+              </div>
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  const renderModal = () => {
+  if (!selectedEvent) return null;
+
+  return (
+    <div className={styles.modalOverlay} onClick={closeEventDetail}>
+      <div className={styles.modalContent} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
+        {/* Close Button */}
+        <button 
+          className={styles.closeButton} 
+          onClick={closeEventDetail}
+          aria-label="Đóng"
+        >
+          <X className={styles.closeIcon} />
+        </button>
+        
+        {/* Modal Header - Compact */}
+        <div className={styles.modalHeader}>
+          <div className={`${styles.modalBadge} ${styles[`badge-${selectedEvent.category}`]}`}>
+            {React.createElement(categoryIcons[selectedEvent.category], { 
+              className: styles.modalBadgeIcon 
+            })}
+            <span>{categoryLabels[selectedEvent.category]}</span>
+          </div>
+          <h2 className={styles.modalTitle}>{selectedEvent.title}</h2>
+          
+          {/* Quick Info - Mobile Optimized */}
+          <div className={styles.quickInfo}>
+            <div className={styles.quickInfoItem}>
+              <Calendar className={styles.quickInfoIcon} />
+              <span>{formatDate(selectedEvent.date)}</span>
+            </div>
+            <div className={styles.quickInfoItem}>
+              <MapPin className={styles.quickInfoIcon} />
+              <span>{selectedEvent.location}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Modal Body - Scrollable */}
+        <div className={styles.modalBody}>
+          {/* Image Gallery - Compact */}
+          {renderCompactImageGallery()}
+          
+          {/* Content Tabs - Mobile Friendly */}
+          {renderContentTabs()}
+        </div>
+
+        {/* Modal Footer - Sticky */}
+        <div className={styles.modalFooter}>
+          {renderQuickActions()}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Compact Image Gallery
+const renderCompactImageGallery = () => {
+  if (!selectedEvent || !eventImages[selectedEvent.id]) return null;
+
+  const images = eventImages[selectedEvent.id];
+  if (images.length === 0) return null;
+
+  return (
+    <div className={styles.compactImageSection}>
+      <div className={styles.mainImageContainer}>
+        <Image
+          src={images[selectedImageIndex]} 
+          alt={`${selectedEvent.title}`}
+          fill
+          className={styles.modalMainImage}
+          sizes="100vw"
+          priority
+        />
+        
+        {images.length > 1 && (
+          <>
+            <div className={styles.imageCounter}>
+              {selectedImageIndex + 1}/{images.length}
+            </div>
+            
+            <button 
+              className={`${styles.navButton} ${styles.navPrev}`}
+              onClick={() => navigateImage('prev')}
+            >
+              <ChevronLeft className={styles.navIcon} />
+            </button>
+            
+            <button 
+              className={`${styles.navButton} ${styles.navNext}`}
+              onClick={() => navigateImage('next')}
+            >
+              <ChevronRight className={styles.navIcon} />
+            </button>
+          </>
+        )}
+      </div>
+      
+      {/* Thumbnail Strip - Horizontal Scroll */}
+      {images.length > 1 && (
+        <div className={styles.thumbnailStrip}>
+          {images.map((img: string, index: number) => (
+            <div 
+              key={index}
+              className={`${styles.thumbnailItem} ${index === selectedImageIndex ? styles.active : ''}`}
+              onClick={() => selectImage(index)}
+            >
+              <Image 
+                src={img} 
+                alt={`Ảnh ${index + 1}`}
+                fill
+                className={styles.thumbnailImg}
+                sizes="60px"
+              />
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Content Tabs
+const [activeTab, setActiveTab] = useState<'info' | 'media'>('info');
+
+const renderContentTabs = () => {
+  const mediaLinks = eventMediaLinks[selectedEvent?.id || ''];
+  const hasMedia = mediaLinks && mediaLinks.length > 0;
+
+  return (
+    <div className={styles.contentTabs}>
+      {/* Tab Navigation */}
+      <div className={styles.tabNav}>
+        <button 
+          className={`${styles.tabButton} ${activeTab === 'info' ? styles.active : ''}`}
+          onClick={() => setActiveTab('info')}
+        >
+          <FileText className={styles.tabIcon} />
+          Chi tiết
+        </button>
+        <button 
+          className={`${styles.tabButton} ${activeTab === 'media' ? styles.active : ''}`}
+          onClick={() => setActiveTab('media')}
+        >
+          <Newspaper className={styles.tabIcon} />
+          Báo chí ({hasMedia ? mediaLinks.length : 0})
+        </button>
+      </div>
+
+      {/* Tab Content */}
+      <div className={styles.tabContent}>
+        {activeTab === 'info' && (
+          <div className={styles.infoTab}>
+            <p className={styles.description}>
+              {selectedEvent?.description}
+            </p>
+            
+            <div className={styles.eventDetails}>
+              <div className={styles.detailItem}>
+                <Users className={styles.detailIcon} />
+                <div className={styles.detailText}>
+                  <span className={styles.detailLabel}>Trường</span>
+                  <span className={styles.detailValue}>{selectedEvent?.school}</span>
+                </div>
+              </div>
+              
+              <div className={styles.detailItem}>
+                <Building className={styles.detailIcon} />
+                <div className={styles.detailText}>
+                  <span className={styles.detailLabel}>Loại sự kiện</span>
+                  <span className={styles.detailValue}>{categoryLabels[selectedEvent?.category || 'talkshow']}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {activeTab === 'media' && (
+          <div className={styles.mediaTab}>
+            {hasMedia ? (
+              <div className={styles.mediaList}>
+                {mediaLinks.map((media, index) => (
+                  <a 
+                    key={index}
+                    href={media.url}
+                    className={styles.mediaItem}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <div className={styles.mediaIcon}>
+                      <Newspaper className={styles.mediaIconSvg} />
+                    </div>
+                    <div className={styles.mediaContent}>
+                      <h4 className={styles.mediaTitle}>{media.title}</h4>
+                      <p className={styles.mediaDesc}>
+                        {media.description.length > 60 
+                          ? `${media.description.substring(0, 60)}...` 
+                          : media.description
+                        }
+                      </p>
+                    </div>
+                    <ExternalLink className={styles.mediaLink} />
+                  </a>
+                ))}
+              </div>
+            ) : (
+              <div className={styles.noMedia}>
+                <Newspaper className={styles.noMediaIcon} />
+                <p>Chưa có thông tin báo chí</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// Quick Actions
+const renderQuickActions = () => {
+  const hasImages = eventImages[selectedEvent?.id || '']?.length > 0;
+  
+  return (
+    <div className={styles.quickActions}>
+      {hasImages && (
+        <button className={styles.actionBtn}>
+          <ImageIcon className={styles.actionIcon} />
+          Thư viện ({eventImages[selectedEvent?.id || '']?.length})
+        </button>
+      )}
+      
+      <button className={styles.actionBtn}>
+        <Play className={styles.actionIcon} />
+        Video
+      </button>
+      
+      <button 
+        className={styles.actionBtnPrimary}
+        onClick={closeEventDetail}
+      >
+        Đóng
+      </button>
+    </div>
+  );
+};
+
+  const renderSeeMoreSection = () => {
+    if (activityEvents.length <= INITIAL_VISIBLE_COUNT) return null;
+
+    return (
+      <div className={styles.seeMoreSection}>
+        {hasMore ? (
+          <button 
+            className={styles.seeMoreButton}
+            onClick={loadMore}
+          >
+            <span>
+              Xem thêm {Math.min(ITEMS_PER_LOAD, activityEvents.length - visibleCount)} sự kiện
+            </span>
+            <ChevronDown className={styles.seeMoreIcon} />
+          </button>
+        ) : visibleCount > INITIAL_VISIBLE_COUNT ? (
+          <button 
+            className={styles.seeMoreButton}
+            onClick={showLess}
+          >
+            <span>Thu gọn</span>
+            <ChevronUp className={styles.seeMoreIcon} />
+          </button>
+        ) : null}
+        
+        {hasMore && (
+          <div className={styles.seeMorePreview}>
+            <span>
+              {activityEvents
+                .slice(visibleCount, visibleCount + 3)
+                .map(e => e.school)
+                .join(' • ')} 
+              {activityEvents.length > visibleCount + 3 && ' • và nhiều hoạt động khác...'}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  // Main render
   return (
     <>
       <section className={styles.section}>
         <div className={styles.container}>
-          {/* Section Header - Giảm padding */}
+          {/* Header */}
           <div className={styles.header}>
             <div className={styles.badge}>
               <span className={styles.badgeText}>🎯 Hoạt động nổi bật</span>
@@ -113,276 +737,18 @@ export default function ActivityShowcase() {
             </p>
           </div>
 
-          {/* Events Grid - Compact Layout */}
+          {/* Events Grid */}
           <div className={styles.eventsContainer}>
-            {displayedEvents.map((event: Event, index: number) => {
-              const Icon = categoryIcons[event.category];
-              const isEven = index % 2 === 0;
-              const currentImages = eventImages[event.id] || [];
-              
-              return (
-                <div 
-                  key={event.id} 
-                  className={`${styles.eventRow} ${isEven ? styles.eventRowNormal : styles.eventRowReverse}`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  {/* Image Section */}
-                  <div 
-                    className={styles.imageSection}
-                    onClick={() => openEventDetail(event)}
-                  >
-                    <div className={styles.imageContainer}>
-                      {currentImages.length > 0 ? (
-                        <>
-                          <Image
-                            src={currentImages[0]} 
-                            alt={event.title}
-                            fill
-                            className={styles.eventImage}
-                            sizes="(max-width: 768px) 100vw, 50vw"
-                            priority={index < 2}
-                          />
-                          <div className={styles.imageOverlay}>
-                            <div className={styles.overlayContent}>
-                              <Eye className={styles.overlayIcon} />
-                              <span className={styles.overlayText}>Xem chi tiết</span>
-                            </div>
-                          </div>
-                        </>
-                      ) : (
-                        <div className={styles.imagePlaceholder}>
-                          <div className={`${styles.categoryIcon} ${styles[`icon-${event.category}`]}`}>
-                            <Icon className={styles.icon} />
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Category Badge */}
-                      <div className={`${styles.imageCategoryBadge} ${styles[`badge-${event.category}`]}`}>
-                        <Icon className={styles.badgeIcon} />
-                        <span>{categoryLabels[event.category]}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Content Section - Compact */}
-                  <div className={styles.contentSection}>
-                    <div className={styles.eventContent}>
-                      {/* Meta Info */}
-                      <div className={styles.eventMeta}>
-                        <div className={styles.metaItem}>
-                          <Calendar className={styles.metaIcon} />
-                          <span className={styles.metaText}>{formatDate(event.date)}</span>
-                        </div>
-                        <div className={styles.metaItem}>
-                          <MapPin className={styles.metaIcon} />
-                          <span className={styles.metaText}>{event.location}</span>
-                        </div>
-                      </div>
-
-                      {/* Title */}
-                      <h3 
-                        className={styles.eventTitle}
-                        onClick={() => openEventDetail(event)}
-                      >
-                        {event.title}
-                      </h3>
-
-                      {/* Description - Compact */}
-                      <p className={styles.eventDescription}>
-                        {event.description}
-                      </p>
-
-                      {/* CTA Button - Single Button */}
-                      <button 
-                        className={`${styles.ctaButton} ${styles[`cta-${event.category}`]}`}
-                        onClick={() => openEventDetail(event)}
-                      >
-                        <span>Xem chi tiết</span>
-                        <ExternalLink className={styles.ctaIcon} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+            {displayedEvents.map(renderEventCard)}
           </div>
 
-          {/* See More/Less Button */}
-          {events.length > INITIAL_DISPLAY_COUNT && (
-            <div className={styles.seeMoreSection}>
-              <button 
-                className={styles.seeMoreButton}
-                onClick={toggleShowMore}
-              >
-                <span>
-                  {showMore 
-                    ? 'Thu gọn' 
-                    : `Xem thêm ${events.length - INITIAL_DISPLAY_COUNT} sự kiện khác`
-                  }
-                </span>
-                {showMore ? (
-                  <ChevronUp className={styles.seeMoreIcon} />
-                ) : (
-                  <ChevronDown className={styles.seeMoreIcon} />
-                )}
-              </button>
-              
-              {!showMore && (
-                <div className={styles.seeMorePreview}>
-                  <span>Đại học Huế • BTEC • Greenwich • và nhiều hoạt động khác...</span>
-                </div>
-              )}
-            </div>
-          )}
+          {/* See More/Less Section */}
+          {renderSeeMoreSection()}
         </div>
       </section>
 
-      {/* Enhanced Modal với nhiều thông tin chi tiết */}
-      {selectedEvent && (
-        <div className={styles.modalOverlay} onClick={closeEventDetail}>
-          <div className={styles.modalContent} onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-            <button className={styles.closeButton} onClick={closeEventDetail}>
-              <X className={styles.closeIcon} />
-            </button>
-            
-            {/* Modal Header */}
-            <div className={styles.modalHeader}>
-              <div className={`${styles.modalBadge} ${styles[`badge-${selectedEvent.category}`]}`}>
-                {React.createElement(categoryIcons[selectedEvent.category], { className: styles.modalBadgeIcon })}
-                <span>{categoryLabels[selectedEvent.category]}</span>
-              </div>
-              <h2 className={styles.modalTitle}>{selectedEvent.title}</h2>
-              <div className={styles.modalSubtitle}>
-                <Calendar className={styles.modalSubIcon} />
-                <span>{formatDate(selectedEvent.date)}</span>
-                <MapPin className={styles.modalSubIcon} />
-                <span>{selectedEvent.location}</span>
-              </div>
-            </div>
-
-            {/* Modal Body */}
-            <div className={styles.modalBody}>
-              {/* Main Image */}
-              <div className={styles.modalImageSection}>
-                <div className={styles.mainImageContainer}>
-                  <Image
-                    src={eventImages[selectedEvent.id]?.[0] || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=600&fit=crop'} 
-                    alt={selectedEvent.title}
-                    fill
-                    className={styles.modalMainImage}
-                    sizes="(max-width: 768px) 100vw, 80vw"
-                  />
-                </div>
-                
-                {/* Thumbnail Gallery */}
-                {eventImages[selectedEvent.id] && eventImages[selectedEvent.id].length > 1 && (
-                  <div className={styles.thumbnailGallery}>
-                    {eventImages[selectedEvent.id].map((img: string, index: number) => (
-                      <div key={index} className={styles.thumbnail}>
-                        <Image 
-                          src={img} 
-                          alt={`${selectedEvent.title} ${index + 1}`}
-                          fill
-                          className={styles.thumbnailImage}
-                          sizes="80px"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Event Stats - Compact & Visual */}
-              <div className={styles.eventStatsSection}>
-                <h3 className={styles.statsTitle}>
-                  <BarChart3 className={styles.statsTitleIcon} />
-                  Thống kê sự kiện
-                </h3>
-                <div className={styles.statsGrid}>
-                  <div className={styles.statCard}>
-                    <Users className={styles.statCardIcon} />
-                    <div className={styles.statCardNumber}>1,200+</div>
-                    <div className={styles.statCardLabel}>Người tham gia</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <Newspaper className={styles.statCardIcon} />
-                    <div className={styles.statCardNumber}>{eventMediaLinks[selectedEvent.id]?.length || 0}</div>
-                    <div className={styles.statCardLabel}>Báo chí đưa tin</div>
-                  </div>
-                  <div className={styles.statCard}>
-                    <ImageIcon className={styles.statCardIcon} />
-                    <div className={styles.statCardNumber}>{eventImages[selectedEvent.id]?.length || 0}</div>
-                    <div className={styles.statCardLabel}>Hình ảnh</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Event Description */}
-              <div className={styles.descriptionSection}>
-                <h3 className={styles.sectionTitle}>Thông tin chi tiết</h3>
-                <p className={styles.modalDescription}>
-                  {selectedEvent.description}
-                </p>
-                <p className={styles.modalDescriptionExtended}>
-                  Sự kiện đã tạo nên dấu ấn mạnh mẽ trong cộng đồng sinh viên và được đánh giá cao 
-                  về chất lượng nội dung cũng như tính thực tiễn. Đây là cơ hội tuyệt vời để các bạn trẻ 
-                  tiếp cận với những xu hướng công nghệ mới nhất và định hướng nghề nghiệp trong tương lai.
-                </p>
-              </div>
-
-              {/* Media Coverage - Compact List */}
-              <div className={styles.mediaSection}>
-                <h3 className={styles.sectionTitle}>
-                  <Newspaper className={styles.sectionTitleIcon} />
-                  Báo chí & Truyền thông
-                </h3>
-                <div className={styles.mediaList}>
-                  {(eventMediaLinks[selectedEvent.id] || []).map((media, index) => (
-                    <a 
-                      key={index} 
-                      href={media.url} 
-                      className={styles.mediaItem}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <div className={styles.mediaIcon}>
-                        <LinkIcon className={styles.mediaIconSvg} />
-                      </div>
-                      <div className={styles.mediaContent}>
-                        <div className={styles.mediaTitle}>{media.title}</div>
-                        <div className={styles.mediaDescription}>
-                          {media.description.length > 60 
-                            ? `${media.description.substring(0, 60)}...` 
-                            : media.description
-                          }
-                        </div>
-                      </div>
-                      <ExternalLink className={styles.mediaLinkIcon} />
-                    </a>
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className={styles.modalActions}>
-                <button className={styles.actionButton}>
-                  <ImageIcon className={styles.actionIcon} />
-                  <span>Xem thư viện ảnh</span>
-                </button>
-                <button className={styles.actionButton}>
-                  <Play className={styles.actionIcon} />
-                  <span>Video highlights</span>
-                </button>
-                <button className={styles.actionButton}>
-                  <ExternalLink className={styles.actionIcon} />
-                  <span>Bài viết đầy đủ</span>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Modal */}
+      {renderModal()}
     </>
   );
 }
