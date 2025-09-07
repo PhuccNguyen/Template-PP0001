@@ -3,43 +3,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Play, Pause, ImageIcon, Calendar, MapPin, Users, ExternalLink, Maximize2, Grid3X3, X, Info } from 'lucide-react';
-import { events } from '@/data/events';
+import { activityEvents } from '@/data/activityData';
+import { eventImageGalleries, type ImageItem } from '@/data/imageGalleries';
 import { formatDate } from '@/lib/utils';
 import styles from './image-carousel.module.css';
 
-// Mock multiple images per event
-const eventImageGalleries = {
-  "1": [
-    { url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop&q=80', caption: 'Khai mạc sự kiện với sự tham gia đông đảo' },
-    { url: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&h=800&fit=crop&q=80', caption: 'Thuyết trình về công nghệ Blockchain' },
-    { url: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=1200&h=800&fit=crop&q=80', caption: 'Tương tác Q&A với sinh viên' },
-    { url: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=1200&h=800&fit=crop&q=80', caption: 'Chụp ảnh lưu niệm cùng ban tổ chức' }
-  ],
-  "2": [
-    { url: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=1200&h=800&fit=crop&q=80', caption: 'Workshop thực hành xây dựng Smart Contract' },
-    { url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&h=800&fit=crop&q=80', caption: 'Sinh viên thảo luận nhóm' },
-    { url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1200&h=800&fit=crop&q=80', caption: 'Demo ứng dụng blockchain đầu tiên' }
-  ],
-  "3": [
-    { url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=800&fit=crop&q=80', caption: 'Hội thảo AI trong giáo dục' },
-    { url: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=1200&h=800&fit=crop&q=80', caption: 'Panel discussion với các chuyên gia' },
-    { url: 'https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=1200&h=800&fit=crop&q=80', caption: 'Networking session' },
-    { url: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=1200&h=800&fit=crop&q=80', caption: 'Trao giải thưởng cho các ý tưởng xuất sắc' }
-  ],
-  "4": [
-    { url: 'https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=1200&h=800&fit=crop&q=80', caption: 'Lễ ký kết hợp tác chiến lược' },
-    { url: 'https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=1200&h=800&fit=crop&q=80', caption: 'Thảo luận về định hướng phát triển' },
-    { url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop&q=80', caption: 'Chụp ảnh kỷ niệm lễ ký kết' }
-  ]
-};
-
-// Enhanced carousel data with multiple images
-const carouselData = events.map(event => ({
+// Enhanced carousel data with real images
+const carouselData = activityEvents.map(event => ({
   ...event,
-  images: eventImageGalleries[event.id as keyof typeof eventImageGalleries] || [
-    { url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&h=800&fit=crop&q=80', caption: 'Hình ảnh sự kiện' }
+  images: eventImageGalleries[event.id] || [
+    { url: '/images/events/about-image/default.jpg', caption: 'Hình ảnh sự kiện' }
   ],
-  stats: { participants: Math.floor(Math.random() * 1500) + 200, media: Math.floor(Math.random() * 10) + 3, photos: eventImageGalleries[event.id as keyof typeof eventImageGalleries]?.length || 1 }
+  stats: { 
+    participants: Math.floor(Math.random() * 1500) + 200, 
+    media: Math.floor(Math.random() * 10) + 3, 
+    photos: eventImageGalleries[event.id]?.length || 1 
+  }
 }));
 
 export default function ImageCarousel() {
@@ -157,18 +136,19 @@ export default function ImageCarousel() {
 
   // Get all images for album view
   const allImages = carouselData.flatMap(event => 
-    event.images.map(img => ({
+    event.images.map((img: ImageItem) => ({
       ...img,
       eventTitle: event.title,
       eventDate: event.date,
-      eventLocation: event.location
+      eventLocation: event.location,
+      eventSchool: event.school
     }))
   );
 
   // Preload images
   useEffect(() => {
     carouselData.forEach(event => {
-      event.images.forEach(img => {
+      event.images.forEach((img: ImageItem) => {
         const imageElement = document.createElement('img');
         imageElement.onload = () => {
           setLoadedImages(prev => new Set([...prev, img.url]));
@@ -177,6 +157,17 @@ export default function ImageCarousel() {
       });
     });
   }, []);
+
+  // Get category colors
+  const getCategoryClass = (category: string) => {
+    switch (category) {
+      case 'talkshow': return 'category-talkshow';
+      case 'workshop': return 'category-workshop';
+      case 'conference': return 'category-conference';
+      case 'mou': return 'category-mou';
+      default: return 'category-talkshow';
+    }
+  };
 
   return (
     <>
@@ -282,7 +273,7 @@ export default function ImageCarousel() {
                 {/* Content Info */}
                 <div className={styles.contentInfo}>
                   <div className={styles.categoryBadge}>
-                    <span className={styles[`category-${currentEvent.category}`]}>
+                    <span className={styles[getCategoryClass(currentEvent.category)]}>
                       {currentEvent.category.toUpperCase()}
                     </span>
                   </div>
