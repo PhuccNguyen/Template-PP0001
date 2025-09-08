@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { personalInfo } from '@/data/constants';
 import { motion } from 'framer-motion';
 import { 
@@ -11,6 +12,20 @@ import {
   BookOpen, Briefcase, GraduationCap
 } from 'lucide-react';
 import styles from './about-intro.module.css';
+
+
+  // Dynamic import để tránh SSR issues
+const ParticleLightsBackground = dynamic(
+  () => import('@/components/3D/ParticleLightsBackground'),
+  { 
+    ssr: false,
+    loading: () => (
+      <div className={styles.sceneLoader}>
+        <div className={styles.loaderPulse} />
+      </div>
+    )
+  }
+);
 
 export default function AboutIntro() {
   const [isVisible, setIsVisible] = useState(false);
@@ -153,6 +168,8 @@ export default function AboutIntro() {
   return (
     <section ref={sectionRef} className={styles.heroSection}>
       {/* Enhanced Advanced Tech Background - Simplified for mobile */}
+            <ParticleLightsBackground />
+
       <div className={styles.heroBackground}>
         <div className={styles.animatedGrid}></div>
         {!isMobile && (

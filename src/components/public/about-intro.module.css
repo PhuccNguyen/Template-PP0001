@@ -478,29 +478,16 @@
   @apply relative z-10;
 }
 
-.portraitBorder {
-  @apply relative rounded-full overflow-hidden;
-  /* Mobile sizes */
-  width: 240px;
-  height: 240px;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
-  border: 2px solid rgba(255, 255, 255, 0.15);
-  box-shadow: 
-    0 0 0 2px rgba(59, 130, 246, 0.2),
-    0 0 0 4px rgba(59, 130, 246, 0.1),
-    0 15px 40px rgba(0, 0, 0, 0.4),
-    inset 0 0 30px rgba(59, 130, 246, 0.1);
-}
 
 /* Responsive portrait sizes */
-@media (min-width: 480px) {
+/* @media (min-width: 480px) {
   .portraitBorder {
     width: 280px;
     height: 280px;
   }
-}
+} */
 
-@media (min-width: 640px) {
+/* @media (min-width: 640px) {
   .portraitBorder {
     width: 320px;
     height: 320px;
@@ -511,16 +498,16 @@
       0 20px 50px rgba(0, 0, 0, 0.45),
       inset 0 0 40px rgba(59, 130, 246, 0.12);
   }
-}
+} */
 
-@media (min-width: 768px) {
+/* @media (min-width: 768px) {
   .portraitBorder {
     width: 380px;
     height: 380px;
   }
-}
+} */
 
-@media (min-width: 1024px) {
+/* @media (min-width: 1024px) {
   .portraitBorder {
     width: 420px;
     height: 420px;
@@ -530,8 +517,8 @@
       0 0 0 8px rgba(59, 130, 246, 0.15),
       0 30px 80px rgba(0, 0, 0, 0.5),
       inset 0 0 50px rgba(59, 130, 246, 0.15);
-  }
-}
+  } */
+/* } */
 
 .portrait {
   @apply relative w-full h-full rounded-full overflow-hidden;
@@ -2737,7 +2724,7 @@ Copy/* Mobile-First CTA Buttons */
   }
   
   /* Simplify portrait frame on very small screens */
-  .portraitBorder {
+  /* .portraitBorder {
     width: 200px !important;
     height: 200px !important;
     border-width: 1px;
@@ -2745,7 +2732,7 @@ Copy/* Mobile-First CTA Buttons */
       0 0 0 2px rgba(59, 130, 246, 0.15),
       0 10px 30px rgba(0, 0, 0, 0.3),
       inset 0 0 20px rgba(59, 130, 246, 0.08);
-  }
+  } */
   
   /* Compact achievement grid */
   .achievementsGrid {
@@ -2844,11 +2831,11 @@ Copy/* Mobile-First CTA Buttons */
     padding-right: 0.75rem;
   }
   
-  .portraitBorder {
+  /* .portraitBorder {
     width: 180px !important;
     height: 180px !important;
   }
-  
+   */
   .heroTitle {
     font-size: 1.5rem;
   }
@@ -2908,10 +2895,10 @@ Copy/* Mobile-First CTA Buttons */
     background: #000000;
   }
   
-  .portraitBorder {
+  /* .portraitBorder {
     border-color: #ffffff;
     background: rgba(255, 255, 255, 0.1);
-  }
+  } */
   
   .heroBadge,
   .infoCard,
@@ -3067,10 +3054,10 @@ Copy/* Mobile-First CTA Buttons */
     display: none !important;
   }
   
-  .portraitBorder {
+  /* .portraitBorder {
     border: 2px solid #000 !important;
     box-shadow: none !important;
-  }
+  } */
   
   .heroPrimaryButton,
   .heroSecondaryButton {
@@ -3169,7 +3156,7 @@ Copy/* Mobile-First CTA Buttons */
   75% { border-color: rgba(245, 158, 11, 0.4); }
 }
 
-.portraitBorder {
+/* .portraitBorder {
   @apply relative w-full h-full rounded-full overflow-hidden;
   background: 
     linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
@@ -3179,7 +3166,7 @@ Copy/* Mobile-First CTA Buttons */
     0 0 0 8px rgba(59, 130, 246, 0.15),
     0 30px 80px rgba(0, 0, 0, 0.5),
     inset 0 0 50px rgba(59, 130, 246, 0.15);
-}
+} */
 
 .portrait {
   @apply relative w-full h-full rounded-full overflow-hidden;
@@ -3194,6 +3181,7 @@ Copy/* Mobile-First CTA Buttons */
   overflow: hidden;
   margin-top: 2rem
 }
+
 .portraitImage { object-fit: contain; object-position: center; }
 
 
@@ -3312,4 +3300,49 @@ Copy/* Mobile-First CTA Buttons */
 @keyframes techGridMove {
   0% { transform: translate(0, 0); }
   100% { transform: translate(20px, 20px); }
+}
+/* .portraitBorder {
+  @apply relative rounded-full overflow-hidden; */
+  /* Mobile sizes */
+  /* background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 
+    0 0 0 2px rgba(59, 130, 246, 0.2),
+    0 0 0 4px rgba(59, 130, 246, 0.1),
+    0 15px 40px rgba(0, 0, 0, 0.4),
+    inset 0 0 30px rgba(59, 130, 246, 0.1);
+} */
+
+
+/* Loader styles for ParticleLightsBackground */
+.sceneLoader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+}
+
+.loaderPulse {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+  animation: pulse 2s ease-in-out infinite;
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.5);
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2);
+  }
 }
